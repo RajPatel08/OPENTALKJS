@@ -1,24 +1,25 @@
-import fs from 'fs/promises'; 
-import ollama from "ollama";
+const { default: ollama } = require("ollama");
+const fs = require("fs");
 
-async function processQuery() {
+async function runChat() {
     try {
-        const q = await fs.readFile("q.txt", "utf8");
+        const inputFilePath = "q.txt";
+        const inputContent = fs.readFileSync(inputFilePath, "utf-8");
 
         const response = await ollama.chat({
-            model: "llama3.2:1b",
-            messages: [{ role: "user", content: q }],
+            model: "llama3.2:3b",
+            messages: [{ role: "user", content: inputContent }]
         });
 
-        const a = response.message.content;
+        const chatbotResponse = response.message.content;
 
-        await fs.writeFile("a.txt", a);
+        const outputFilePath = "a.txt";
+        fs.writeFileSync(outputFilePath, chatbotResponse, "utf-8");
 
-        console.log("Response written to a.txt successfully!");
+        console.log("Chatbot response has been saved to a.txt.");
     } catch (error) {
-        console.error("Error processing the query:", error);
-    }
+        console.error("Error occurred:", error.message);
+    }
 }
 
-
-processQuery();
+runChat();
